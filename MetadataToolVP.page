@@ -1,0 +1,129 @@
+<apex:page controller="FieldCreator">
+    <apex:form>
+        <apex:pageBlock>
+            <apex:commandButton action="{!createObject}" value="Create Object"/>
+            <apex:commandButton action="{!createField}" value="Create Field"/>
+        </apex:pageBlock>
+
+        <apex:pageBlock title="Create Object" rendered="{!NOT(fieldCreation)}">
+
+            <apex:pageBlockSection title="Custom Object Information" columns="1" collapsible="false">
+                <apex:inputText label="Label" value="{!objectLabel}"/>
+                <apex:inputText label="Plural Label" value="{!pluralLabel}"/>
+                <apex:inputText label="Object Name" value="{!objectName}"/>
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection title="Enter Record Name Label and Format" columns="1" collapsible="false">
+                <apex:inputText label="Record Name" value="{!nameFieldLabel}"/>
+                <apex:selectList id="nameField" size="1" value="{!nameField}" label="Record Type">
+                    <apex:selectOption itemLabel="Text" itemValue="Text"/>
+                    <apex:selectOption itemLabel="Auto Number" itemValue="AutoNumber"/>
+                </apex:selectList>
+            </apex:pageBlockSection>
+
+            <apex:pageBlockSection title="Deployment Status" columns="1" collapsible="false">
+                <apex:selectRadio label="Deployment Status" value="{!deploymentStatus}">
+                    <apex:selectOption itemLabel="In Development" itemValue="InDevelopment"/>
+                    <apex:selectOption itemLabel="Deployed" itemValue="Deployed"/>
+                </apex:selectRadio>
+                <apex:commandButton action="{!createCustomObject}" value="Create"/>
+            </apex:pageBlockSection>
+
+        </apex:pageBlock>
+
+        <apex:pageBlock title="Create Field" rendered="{!fieldCreation}">
+            <apex:pageBlock>
+                <apex:pageBlockButtons>
+                    <apex:commandButton action="{!next}" value="Next"/>
+                </apex:pageBlockButtons>
+                <apex:pageBlockSection columns="2" collapsible="True">
+                    <h1>Select Object</h1>
+                    <apex:selectList id="object" size="1" value="{!selectedObject}">
+                        <apex:selectOptions value="{!allObjects}"/>
+                    </apex:selectList>
+                    <h1>Select Data Type</h1>
+                    <apex:selectList id="dataType" size="1" value="{!selectedDataType}">
+                        <apex:selectOptions value="{!dataTypes}"/>
+                    </apex:selectList>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+            <apex:pageBlock rendered="{!IF(selectedDataType='Text', True, False)}">
+                <apex:pageBlockButtons>
+                    <apex:commandButton action="{!saveText}" value="Save"/>
+                </apex:pageBlockButtons>
+                    <apex:pageBlockSection title="Text">
+                    <apex:outputLabel value="Label" for="labelInput"/>
+                    <apex:inputText value="{!label}" id="labelInput"/>
+                    <apex:outputLabel value="Name" for="nameInput"/>
+                    <apex:inputText value="{!name}" id="nameInput"/>
+                    <apex:outputLabel value="Length" for="lengthInput"/>
+                    <apex:inputText value="{!length}" id="lengthInput"/>
+                    <apex:outputLabel value="Required" for="requiredCheckbox"/>
+                    <apex:inputCheckbox id="requiredCheckbox" value="{!required}" label="Always require a value in this field in order to save a record"/>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+            <apex:pageBlock rendered="{!IF(selectedDataType='Number' || selectedDataType='Percent' || selectedDataType='Currency', True, False)}">
+                <apex:pageBlockButtons>
+                    <apex:commandButton action="{!saveNumber}" value="Save"/>
+                </apex:pageBlockButtons>
+                    <apex:pageBlockSection title="{!selectedDataType}">
+                    <apex:outputLabel value="Label" for="labelInput"/>
+                    <apex:inputText value="{!label}" id="labelInput"/>
+                    <apex:outputLabel value="Name" for="nameInput"/>
+                    <apex:inputText value="{!name}" id="nameInput"/>
+                    <apex:outputLabel value="Length" for="lengthInput"/>
+                    <apex:inputText value="{!length}" id="lengthInput"/>
+                    <apex:outputLabel value="Decimal Places" for="dpInput"/>
+                    <apex:inputText value="{!decimalPlaces}" id="dpInput"/>
+                    <apex:outputLabel value="Required" for="requiredCheckbox"/>
+                    <apex:inputCheckbox id="requiredCheckbox" value="{!required}"/>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+            <apex:pageBlock rendered="{!IF(selectedDataType='Date' || selectedDataType='DateTime' || selectedDataType='TextArea' ||
+            selectedDataType='Email' || selectedDataType='Phone' || selectedDataType='Time' || selectedDataType='URL', True, False)}">
+                <apex:pageBlockButtons>
+                    <apex:commandButton action="{!saveLabelName}" value="Save"/>
+                </apex:pageBlockButtons>
+                    <apex:pageBlockSection title="{!selectedDataType}">
+                    <apex:outputLabel value="Label" for="labelInput"/>
+                    <apex:inputText value="{!label}" id="labelInput"/>
+                    <apex:outputLabel value="Name" for="nameInput"/>
+                    <apex:inputText value="{!name}" id="nameInput"/>
+                    <apex:outputLabel value="Required" for="requiredCheckbox"/>
+                    <apex:inputCheckbox id="requiredCheckbox" value="{!required}"/>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+            <apex:pageBlock rendered="{!IF(selectedDataType='LongTextArea', True, False)}">
+                <apex:pageBlockButtons>
+                    <apex:commandButton action="{!saveBigTexts}" value="Save"/>
+                </apex:pageBlockButtons>
+                    <apex:pageBlockSection title="{!selectedDataType}">
+                    <apex:outputLabel value="Label" for="labelInput"/>
+                    <apex:inputText value="{!label}" id="labelInput"/>
+                    <apex:outputLabel value="Name" for="nameInput"/>
+                    <apex:inputText value="{!name}" id="nameInput"/>
+                    <apex:outputLabel value="Length(Max 131,072)" for="lengthInput"/>
+                    <apex:inputText value="{!length}" id="lengthInput"/>
+                    <apex:outputLabel value="Visible Lines" for="vlInput"/>
+                    <apex:inputText value="{!visibleLines}" id="vlInput"/>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+            <apex:pageBlock rendered="{!IF(selectedDataType='Checkbox', True, False)}">
+                <apex:pageBlockButtons>
+                    <apex:commandButton action="{!saveCheckbox}" value="Save"/>
+                </apex:pageBlockButtons>
+                    <apex:pageBlockSection title="{!selectedDataType}">
+                    <apex:outputLabel value="Label" for="labelInput"/>
+                    <apex:inputText value="{!label}" id="labelInput"/>
+                    <apex:outputLabel value="Name" for="nameInput"/>
+                    <apex:inputText value="{!name}" id="nameInput"/>
+                    <apex:outputLabel value="Default Value" for="dvInput"/>
+                    <apex:selectRadio value="{!defaultvalue}">
+                        <apex:selectOption itemLabel="Checked" itemValue="true"/>
+                        <apex:selectOption itemLabel="Unchecked" itemValue="false"/>
+                    </apex:selectRadio>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>
